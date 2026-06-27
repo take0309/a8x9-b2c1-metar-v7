@@ -69,8 +69,33 @@
     function metar() {
       const container = document.getElementById("metar-container");
       container.innerHTML = ""; // クリア
-      const ports = ["RJER","RJEO","RJNF","RJAN","RJAZ","RJTQ","RJTH","RJNO","RJOW","RJDB","RJFC","RJKI","RJKN","RJKB","RORY","ROKJ","RORK","ROMD","RORT","ROYN"];
-      const areas = [0,0,4,3,3,3,3,6,6,8,9,9,9,9,9,10,10,10,10,10];
+      const ports = [
+        "RJCC", "RJCW", "RJER", "RJCK", "RJEB", "RJEC", "RJCB", "RJCM", "RJCN", "RJCH", "RJEO", "RJCO", "RJCJ",
+        "RJSS", "RJSK", "RJSC", "RJSA", "RJSI", "RJSY", "RJSF", "RJSR", "RJSM",
+        "RJAA", "RJTT",
+        "RJAN", "RJAZ",
+        "RJSN", "RJSD", "RJAF", "RJNT", "RJNF", "RJNW",
+        "RJTO", "RJTQ", "RJTH",
+        "RJNS", "RJGG", "RJAH", "RJNK",
+        "RJBB", "RJOO", "RJNO", "RJOY", "RJBE", "RJOA",
+        "RJOT", "RJOM", "RJOK", "RJBD", "RJOR", "RJOC", "RJOW", "RJOB", "RJOH", "RJOS",
+        "RJFF", "RJFR", "RJFU", "RJFT", "RJFO", "RJFM", "RJFK", "RJDC", "RJFS", "RJDB", "RJFE", "RJDT", "RJFG", "RJFC", "RJKB", "RJKA", "RJKI", "RORY", "RJKN",
+        "ROAH", "RORK", "ROMD", "ROMY", "RORT", "ROIG", "ROKJ", "ROYN", "RORS"
+      ];
+
+      const areas = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1, 1, 1, 1, 1,
+        2, 2,
+        3, 3,
+        4, 4, 4, 4, 4, 4,
+        3, 3, 3,
+        4, 4, 2, 4,
+        5, 5, 6, 5, 5, 6,
+        7, 7, 7, 5, 6, 6, 6, 6, 6, 7,
+        8, 8, 8, 9, 8, 9, 9, 6, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
+        10, 10, 10, 10, 10, 10, 10, 10, 10
+      ];
       
       ports.forEach((port, index) => {
         let p = document.createElement("p");
