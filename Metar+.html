@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>最新電文</title>
+  <style>
+    body { font-family: sans-serif; padding: 10px; }
+    #ymdhmz { font-weight: bold; }
+    .metar-item { height: 45px; overflow: hidden; border-bottom: 1px solid #eee; }
+    iframe {
+      margin-left: -70px;
+      margin-top: -82px;
+      overflow: hidden;
+      position: relative;
+      width: 750px;
+      height: 400px;
+      top: -35%;
+      left: -1%;
+      -moz-transform:scale(0.8,0.8);
+      -webkit-transform:scale(0.8,0.8);
+      -o-transform:scale(0.8,0.8);
+      -ms-transform:scale(0.8,0.8);
+      transform:scale(0.8,0.8);
+    }
+  </style>
+</head>
+<body>
+
+  現在時刻：<span id="ymdhmz">読込中...</span>
+  <button id="MonthDate_btn">最新電文</button>
+
+  <div id="metar-container" style="margin-top: 15px;">
+    </div>
+
+  <script>
+    function show_MonthDate() {
+      var now = new Date();
+      var y = now.getUTCFullYear();
+      var m = String(now.getUTCMonth()+1).padStart(2, '0');
+      var d = String(now.getUTCDate()).padStart(2, '0');
+      var h = String(now.getUTCHours()).padStart(2, '0');
+      var min = String(Math.floor(now.getUTCMinutes()/10)*10).padStart(2, '0');
+      document.getElementById("ymdhmz").textContent = y + '/' + m + '/' + d + ' ' + h + ':' + min + 'Z';
+    }
+
+    function metar() {
+      const container = document.getElementById("metar-container");
+      container.innerHTML = ""; // クリア
+      const ports = ["RJER","RJEO","RJNF","RJAN","RJAZ","RJTQ","RJTH","RJNO","RJOW","RJDB","RJFC","RJKI","RJKN","RJKB","RORY","ROKJ","RORK","ROMD","RORT","ROYN"];
+      const areas = [0,0,4,3,3,3,3,6,6,8,9,9,9,9,9,10,10,10,10,10];
+      
+      ports.forEach((port, index) => {
+        let p = document.createElement("p");
+        p.className = "metar-item";
+        p.innerHTML = `<iframe src="https://www.imoc.co.jp/SmartPhone/d/metar.php?Area=${areas[index]}&Port=${port}"></iframe>`;
+        container.appendChild(p);
+      });
+    }
+
+    // 読み込み時に実行
+    window.onload = function() {
+      show_MonthDate();
+      metar();
+    };
+
+    document.getElementById("MonthDate_btn").addEventListener('click', function() {
+      show_MonthDate();
+      metar();
+    });
+  </script>
+</body>
+</html>
