@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  /* <meta name="viewport" content="width=device-width, initial-scale=1.0"> */
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>最新電文</title>
   <style>
     body {
@@ -25,13 +26,16 @@
       height: 87px;
       overflow: hidden;
       margin: 0;
+      position: relative; /* 追加 */
     }
     
     iframe {
       margin-left: -60px;
       margin-top: -70px;
       overflow: hidden;
-      position: relative;
+      /* position: relative; */
+      position: absolute; /* 追加 */
+      transform-origin: top left; /* 縮尺の基準点を左上に */
       width: 650px;
       height: 360px;
       top: -20%;
@@ -63,6 +67,26 @@
       var min = String(Math.floor(now.getUTCMinutes()/10)*10).padStart(2, '0');
       document.getElementById("ymdhmz").textContent = y + '/' + m + '/' + d + ' ' + h + ':' + min + 'Z';
     }
+
+    // 追加　ここから　↓↓　---------------------------
+    
+    function adjustScale() {
+      const containerWidth = document.getElementById("metar-container").clientWidth;
+      const targetWidth = 530; // iframeの表示したい実質的な幅
+      const scale = containerWidth / targetWidth;
+  
+      const frames = document.querySelectorAll("iframe");
+      frames.forEach(frame => {
+        frame.style.transform = `scale(${scale})`;
+      });
+    }
+
+    // 画面回転時に再計算
+    window.addEventListener("orientationchange", function() {
+      setTimeout(adjustScale, 200); // 回転完了を待って実行
+    });
+
+    // 追加　ここまで　↑↑　---------------------------
 
     function metar() {
       const container = document.getElementById("metar-container");
@@ -101,6 +125,9 @@
         p.innerHTML = `<iframe src="https://www.imoc.co.jp/SmartPhone/d/metar.php?Area=${areas[index]}&Port=${port}"></iframe>`;
         container.appendChild(p);
       });
+
+      // 追加
+      setTimeout(adjustScale, 100); 
     }
 
     // 読み込み時に実行
