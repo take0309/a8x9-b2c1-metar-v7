@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>最新電文</title>
   <style>
     body {
@@ -25,17 +25,30 @@
       height: 87px;
       overflow: hidden;
       margin: 0;
-      position: relative; /* 追加 */
+      /* position: relative; /* 追加 */
+    }
+
+    /* 縦表示（ポートレート）の場合 */
+    @media screen and (orientation: portrait) {
+      iframe {
+        transform: scale(0.8); /* 縦向きの時の倍率 */
+        transform-origin: top left;
+      }
+    }
+
+    /* 横表示（ランドスケープ）の場合 */
+    @media screen and (orientation: landscape) {
+      iframe {
+        transform: scale(1.2); /* 横向きの時の倍率 */
+        transform-origin: top left;
+      }
     }
     
     iframe {
       margin-left: -60px;
       margin-top: -70px;
       overflow: hidden;
-      /* position: relative; */
-      position: absolute; /* 追加 */
-      /* transform-origin: top left; /* 縮尺の基準点を左上に */
-      transform-origin: -50px top; /* 縮尺の基準点を左上に */
+      position: relative;
       width: 650px;
       height: 360px;
       top: -20%;
@@ -67,26 +80,6 @@
       var min = String(Math.floor(now.getUTCMinutes()/10)*10).padStart(2, '0');
       document.getElementById("ymdhmz").textContent = y + '/' + m + '/' + d + ' ' + h + ':' + min + 'Z';
     }
-
-    // 追加　ここから　↓↓　---------------------------
-    
-    function adjustScale() {
-      const containerWidth = document.getElementById("metar-container").clientWidth;
-      const targetWidth = 330; // iframeの表示したい実質的な幅
-      const scale = containerWidth / targetWidth;
-  
-      const frames = document.querySelectorAll("iframe");
-      frames.forEach(frame => {
-        frame.style.transform = `scale(${scale})`;
-      });
-    }
-
-    // 画面回転時に再計算
-    window.addEventListener("orientationchange", function() {
-      setTimeout(adjustScale, 200); // 回転完了を待って実行
-    });
-
-    // 追加　ここまで　↑↑　---------------------------
 
     function metar() {
       const container = document.getElementById("metar-container");
@@ -126,8 +119,6 @@
         container.appendChild(p);
       });
 
-      // 追加
-      setTimeout(adjustScale, 100); 
     }
 
     // 読み込み時に実行
