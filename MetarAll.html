@@ -22,9 +22,16 @@
     }
     
     .metar-item {
-      height: 87px;
+      height: 67px;
       overflow: hidden;
       margin: 0;
+    }
+
+    /* 横表示（ランドスケープ）の場合 */
+    @media screen and (orientation: landscape) {
+      .metar-item {
+        height: 87px; /* 必要に応じて数値を調整してください */
+      }
     }
 
     iframe {
