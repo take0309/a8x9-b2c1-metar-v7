@@ -28,22 +28,7 @@
       /* position: relative; /* 追加 */
     }
 
-    /* 縦表示（ポートレート）の場合 */
-    @media screen and (orientation: portrait) {
-      iframe {
-        transform: scale(0.8); /* 縦向きの時の倍率 */
-        transform-origin: top left;
-      }
-    }
-
-    /* 横表示（ランドスケープ）の場合 */
-    @media screen and (orientation: landscape) {
-      iframe {
-        transform: scale(1.2); /* 横向きの時の倍率 */
-        transform-origin: top left;
-      }
-    }
-    
+    /*
     iframe {
       margin-left: -60px;
       margin-top: -70px;
@@ -59,7 +44,37 @@
       -ms-transform:scale(0.9,0.9);
       transform:scale(0.9,0.9);
     }
-   
+    */
+
+    iframe {
+      margin-left: -60px;
+      margin-top: -70px;
+      overflow: hidden;
+      position: relative;
+      width: 650px;
+      height: 360px;
+      transform-origin: top left;
+      transform: scale(0.8);
+    }
+
+    /* 縦表示（ポートレート）の場合 */
+    @media screen and (orientation: portrait) {
+      iframe {
+        top: -20%;
+        left: 15px;
+        transform: scale(0.8);
+      }
+    }
+
+    /* 横表示（ランドスケープ）の場合 */
+    @media screen and (orientation: landscape) {
+      iframe {
+        top: -20%;
+        left: 15px;
+        transform: scale(1.1);
+      }
+    }
+  
   </style>
 </head>
 <body>
