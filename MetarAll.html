@@ -21,66 +21,125 @@
       font-weight: bold;
     }
     
-    .metar-item {
+    /* ALL表示用の設定 */
+    .metar-item.all-view {
       height: 60px;
       overflow: hidden;
       margin: 0;
     }
-    
+
+    /* 個別表示用の設定 */
+    .metar-item.single-view {
+      height: 1000px;
+      overflow: hidden;
+      margin: 0;
+    }
+
     iframe {
       margin-left: -60px;
-      margin-top: -100px;
       overflow: hidden;
       position: relative;
       border: none;
       width: 650px;
-      height: 300px;
       top: 0%;
       left: -55px;
+      transform-origin: top left;
       -moz-transform: scale(0.6,0.6);
       -webkit-transform: scale(0.6,0.6);
       -o-transform: scale(0.6,0.6);
       -ms-transform: scale(0.6,0.6);
-      transform: scale(0.6,0.6);
+      transform: scale(0.6, 0.6);
     }
+    
+    /* 個別表示時のiframe拡大（縮小を解除） */
+    .metar-item.all-view iframe {  
+      margin-top: -100px;      
+      height: 300px;
+    }
+    
+    /* 個別表示時のiframe拡大（縮小を解除） */
+    .metar-item.single-view iframe {
+      margin-top: -100px;
+      height: 1000px;
+    }
+ 
 
     /* 横表示（ランドスケープ）の場合 */
     @media screen and (orientation: landscape) {
-      .metar-item {
+       
+      /* ALL表示用の設定 */
+      .metar-item.all-view {
         height: 85px;
         overflow: hidden;
         margin: 0;
-      }      
+      }
+
+      /* 個別表示用の設定 */
+      .metar-item.single-view {
+        height: 1000px;
+        overflow: hidden;
+        margin: 0;
+      }
+
       iframe {
         margin-left: -60px;
-        margin-top: -86px;
+        width: 650px;
+        top: 0%;
+        left: 55px;
         overflow: hidden;
         position: relative;
         border: none;
-        width: 650px;
-        height: 360px;
-        top: -0%;
-        left: 15px;
         -moz-transform:scale(0.9,0.9);
         -webkit-transform:scale(0.9,0.9);
         -o-transform:scale(0.9,0.9);
         -ms-transform:scale(0.9,0.9);
-        transform:scale(0.9,0.9);
+        transform: scale(0.9, 0.9);
+      }
+      
+      /* 個別表示時のiframe拡大（縮小を解除） */
+      .metar-item.all-view iframe {  
+        margin-top: -70px;      
+        height: 360px;
+      }
+      
+      /* 個別表示時のiframe拡大（縮小を解除） */
+      .metar-item.single-view iframe {
+        margin-top: -70px;
+        height: 1000px;
       }
     }
-  
   </style>
+  
 </head>
 <body>
 
   現在時刻：<span id="ymdhmz">読込中...</span>
-  <button id="MonthDate_btn">最新電文</button>
+  <button id="update_btn">最新電文</button>
+  
+  <select id="port_select">
+    <option value="ALL">ALL</option>
+  </select>
 
-  <div id="metar-container" style="margin-top: 5px; overflow-y: auto;">
-    </div>
+  <div id="metar-container" style="margin-top: 10px;"></div>
 
   <script>
-    function show_MonthDate() {
+    const ports = [
+      "RJCC", "RJCW", "RJER", "RJCK", "RJEB", "RJEC", "RJCB", "RJCM", "RJCN", "RJCH", "RJEO", "RJCO", "RJCJ",
+      "RJSS", "RJSK", "RJSC", "RJSA", "RJSI", "RJSY", "RJSF", "RJSR", "RJSM",
+      "RJAA", "RJTT", "RJAN", "RJAZ", "RJSN", "RJSD", "RJAF", "RJNT", "RJNF", "RJNW",
+      "RJTO", "RJTQ", "RJTH", "RJNS", "RJGG", "RJAH", "RJNK", "RJBB", "RJOO", "RJNO",
+      "RJOY", "RJBE", "RJOA", "RJOT", "RJOM", "RJOK", "RJBD", "RJOR", "RJOC", "RJOW",
+      "RJOB", "RJOH", "RJOS", "RJFF", "RJFR", "RJFU", "RJFT", "RJFO", "RJFM", "RJFK",
+      "RJDC", "RJFS", "RJDB", "RJFE", "RJDT", "RJFG", "RJFC", "RJKB", "RJKA", "RJKI",
+      "RORY", "RJKN", "ROAH", "RORK", "ROMD", "ROMY", "RORT", "ROIG", "ROKJ", "ROYN", "RORS"
+    ];
+
+    const areas = [
+      0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,3,3,4,4,4,4,4,4,3,3,3,4,4,2,4,5,5,6,5,5,6,
+      7,7,7,5,6,6,6,6,6,7,8,8,8,9,8,9,9,6,8,8,8,8,9,9,9,9,9,9,9,10,10,10,10,10,10,10,10,10
+    ];
+
+    function showTime() {
       var now = new Date();
       var y = now.getUTCFullYear();
       var m = String(now.getUTCMonth()+1).padStart(2, '0');
@@ -90,56 +149,35 @@
       document.getElementById("ymdhmz").textContent = y + '/' + m + '/' + d + ' ' + h + ':' + min + 'Z';
     }
 
-    function metar() {
+    function renderMetar(targetPort) {
       const container = document.getElementById("metar-container");
-      container.innerHTML = ""; // クリア
-      const ports = [
-        "RJCC", "RJCW", "RJER", "RJCK", "RJEB", "RJEC", "RJCB", "RJCM", "RJCN", "RJCH", "RJEO", "RJCO", "RJCJ",
-        "RJSS", "RJSK", "RJSC", "RJSA", "RJSI", "RJSY", "RJSF", "RJSR", "RJSM",
-        "RJAA", "RJTT",
-        "RJAN", "RJAZ",
-        "RJSN", "RJSD", "RJAF", "RJNT", "RJNF", "RJNW",
-        "RJTO", "RJTQ", "RJTH",
-        "RJNS", "RJGG", "RJAH", "RJNK",
-        "RJBB", "RJOO", "RJNO", "RJOY", "RJBE", "RJOA",
-        "RJOT", "RJOM", "RJOK", "RJBD", "RJOR", "RJOC", "RJOW", "RJOB", "RJOH", "RJOS",
-        "RJFF", "RJFR", "RJFU", "RJFT", "RJFO", "RJFM", "RJFK", "RJDC", "RJFS", "RJDB", "RJFE", "RJDT", "RJFG", "RJFC", "RJKB", "RJKA", "RJKI", "RORY", "RJKN",
-        "ROAH", "RORK", "ROMD", "ROMY", "RORT", "ROIG", "ROKJ", "ROYN", "RORS"
-      ];
+      container.innerHTML = "";
+      showTime();
 
-      const areas = [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        1, 1, 1, 1, 1, 1, 1, 1, 1,
-        2, 2,
-        3, 3,
-        4, 4, 4, 4, 4, 4,
-        3, 3, 3,
-        4, 4, 2, 4,
-        5, 5, 6, 5, 5, 6,
-        7, 7, 7, 5, 6, 6, 6, 6, 6, 7,
-        8, 8, 8, 9, 8, 9, 9, 6, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
-        10, 10, 10, 10, 10, 10, 10, 10, 10
-      ];
-      
       ports.forEach((port, index) => {
+        if (targetPort !== "ALL" && port !== targetPort) return;
+
         let p = document.createElement("p");
-        p.className = "metar-item";
+        p.className = (targetPort === "ALL") ? "metar-item all-view" : "metar-item single-view";
         p.innerHTML = `<iframe src="https://www.imoc.co.jp/SmartPhone/d/metar.php?Area=${areas[index]}&Port=${port}"></iframe>`;
         container.appendChild(p);
       });
-
     }
 
-    // 読み込み時に実行
+    // 初期化
     window.onload = function() {
-      show_MonthDate();
-      metar();
-    };
+      const select = document.getElementById("port_select");
+      ports.forEach(p => {
+        let opt = document.createElement("option");
+        opt.value = p; opt.textContent = p;
+        select.appendChild(opt);
+      });
 
-    document.getElementById("MonthDate_btn").addEventListener('click', function() {
-      show_MonthDate();
-      metar();
-    });
+      renderMetar("ALL");
+
+      document.getElementById("update_btn").onclick = () => renderMetar(select.value);
+      select.onchange = () => renderMetar(select.value);
+    };
   </script>
 </body>
 </html>
